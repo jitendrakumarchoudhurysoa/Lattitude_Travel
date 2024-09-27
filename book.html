@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.popup-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+</style>
+
+</head>
+<body>
+    <div class="container">
+        <h1 id="package-title">Package Title</h1>
+        <img id="package-image" src="" alt="Package Image" class="img-fluid">
+        <p id="package-description">Package Description</p>
+        <form id="booking-form">
+            <label for="start-date">Starting Date:</label>
+            <input type="date" id="start-date" name="start-date" required>
+
+            <label for="num-passengers">Number of Passengers:</label>
+            <input type="number" id="num-passengers" name="num-passengers" required>
+
+            <label for="passenger-names">All Passengers' Names:</label>
+            <textarea id="passenger-names" name="passenger-names" required></textarea>
+
+            <label for="package-selection">Package:</label>
+            <select id="package-selection" name="package-selection" disabled>
+                <option value="selected-package">Selected Package</option>
+            </select>
+
+            <label for="price">Price:</label>
+            <input type="text" id="price" name="price" disabled>
+
+            <button type="button" id="submit-button">Submit</button>
+        </form>
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close-button">&times;</span>
+            <h2>Booking Summary</h2>
+            <p id="summary-details"></p>
+            <button id="payment-button"><a href="payment-page.html" style="text-decoration: none;">Proceed to Payment</a></button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const packageTitle = urlParams.get('title');
+        const packageImage = urlParams.get('image');
+        const packageDescription = urlParams.get('description');
+        const packagePrice = urlParams.get('price');
+    
+        // Populate the form with package details
+        document.getElementById('package-title').innerText = packageTitle;
+        document.getElementById('package-image').src = packageImage;
+        document.getElementById('package-description').innerText = packageDescription;
+        document.getElementById('price').value = packagePrice;
+    
+        // Handle form submission
+        document.getElementById('submit-button').addEventListener('click', function() {
+            const startDate = document.getElementById('start-date').value;
+            const numPassengers = document.getElementById('num-passengers').value;
+            const passengerNames = document.getElementById('passenger-names').value;
+            const packageSelection = packageTitle; // Package is already selected
+            const price = packagePrice;
+    
+            // Calculate total price with tax and discount
+            const tax = 0.1 * parseFloat(price);
+            const discount = 0.15 * parseFloat(price);
+            const totalPrice = (parseFloat(price)*(numPassengers)) + tax - discount;
+    
+            // Show popup with details
+            const summaryDetails = `
+                <strong>Package:</strong> ${packageSelection}<br>
+                <strong>Starting Date:</strong> ${startDate}<br>
+                <strong>Number of Passengers:</strong> ${numPassengers}<br>
+                <strong>Passengers' Names:</strong> ${passengerNames}<br>
+                <strong>Price:</strong> ₹${price}<br>
+                <strong>Tax (10%):</strong> ₹${tax.toFixed(2)}<br>
+                <strong>Discount (5%):</strong> ₹${discount.toFixed(2)}<br>
+                <strong>Total Price:</strong> ₹${totalPrice.toFixed(2)}
+            `;
+            document.getElementById('summary-details').innerHTML = summaryDetails;
+            document.getElementById('popup').style.display = 'block';
+        });
+    
+        // Close the popup
+        document.querySelector('.close-button').addEventListener('click', function() {
+            document.getElementById('popup').style.display = 'none';
+        });
+    
+        // Handle payment button click
+        document.getElementById('payment-button').addEventListener('click', function() {
+            // Redirect to payment page
+            window.location.href = 'payment.html';
+        });
+    });
+</script>
+</body>
+</html>
